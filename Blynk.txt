@@ -1,0 +1,59 @@
+#define BLYNK_TEMPLATE_ID "TMPL3-JFrGhLG" 
+#define BLYNK_TEMPLATE_NAME "Boiler Temperature Monitor" 
+#define BLYNK_AUTH_TOKEN "Nc9EcRJWH86Y_RZ3_2mohr8nr7ZTIC2V" 
+ 
+#define BLYNK_PRINT Serial 
+#include <ESP8266WiFi.h>  
+#include <BlynkSimpleEsp8266.h> 
+ 
+#include <DHT.h> 
+ 
+ 
+char auth[] = BLYNK_AUTH_TOKEN; 
+ 
+char ssid[] = "Samsung Galaxy F12";   
+char pass[] = "manoj051";   
+ 
+BlynkTimer timer; 
+ 
+ 
+#define DHTPIN 2  
+#define DHTTYPE DHT11   
+DHT dht(DHTPIN, DHTTYPE); 
+ 
+ 
+void sendSensor() 
+{ 
+  float h = dht.readHumidity(); 
+  float t = dht.readTemperature();  
+  if (isnan(h) || isnan(t)) { 
+    Serial.println("Failed to read from DHT sensor!"); 
+    return; 
+  } 
+ 
+    Blynk.virtualWrite(V0, t); 
+    Blynk.virtualWrite(V1, h); 
+    Serial.print("Temperature : "); 
+    Serial.print(t); 
+    Serial.print("    Humidity : "); 
+    Serial.println(h); 
+} 
+void setup() 
+{    
+17 
+ 
+   
+  Serial.begin(115200); 
+   
+ 
+  Blynk.begin(auth, ssid, pass); 
+  dht.begin(); 
+  timer.setInterval(100L, sendSensor); 
+  
+  } 
+ 
+void loop() 
+{ 
+  Blynk.run(); 
+  timer.run(); 
+} 
